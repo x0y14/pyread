@@ -91,7 +91,7 @@ class Lexer:
         return result
     
 
-    def consume_while_number(self):
+    def consume_number(self):
         # 数字
         result = ''
         while self.is_eof() == False:
@@ -103,7 +103,7 @@ class Lexer:
         return result
     
 
-    def consume_while_text(self):
+    def consume_text(self):
         is_single_q = False
         text = ''
         assert (self.get_char() in ["'", '"'])
@@ -128,8 +128,39 @@ class Lexer:
             
         # print(f'text: {text}')
         return text
-
     
+
+    def consume_comment(self):
+        # 全部こんだけ綺麗にかけたらすごいシンプルになるのに。
+        # 後で書き直そうかな。
+        comment = ''
+        assert (self.get_char() == '#')
+        self.consume_char()
+
+        # この場合、
+        # TKN_COMMENT(data=' this is comment\n')
+        # TKN_SPACE_NEWLINE()
+        # こうなる
+        # \nを別にした方がいいのか悪いのか。
+        # while self.is_eof() == False:
+        #     c_here = self.consume_char()
+        #     comment += c_here
+        #     if c_here == '\n':
+        #         return comment
+
+        # 一方こっちは
+        # TKN_COMMENT(data=' this is comment')
+        # TKN_SPACE_NEWLINE()
+        # TKN_SPACE_NEWLINE()
+        # こっちにする。
+        while self.is_eof() == False:
+            if self.get_char() == '\n':
+                return comment
+            else:
+                comment += self.consume_char()
+
+
+
     def lex(self):
         in_text = False
         # in_func_param = False
@@ -157,7 +188,7 @@ class Lexer:
                     #     self.consume_char()
             
             elif re.match(r'[0-9.]', c_here):
-                block = self.consume_while_number()
+                block = self.consume_number()
                 data, is_float = StringConverter(block).convert()
                 # print( (f'{in_func_param_tag}number', n) )
                 if is_float:
@@ -170,7 +201,7 @@ class Lexer:
 
             elif c_here in ['"', "'"]:
                 # get text
-                text = self.consume_while_text()
+                text = self.consume_text()
                 # print( ( 'data', text ) )
                 tokens.append(TKN_STRING(data=text))
 
@@ -222,6 +253,10 @@ class Lexer:
                     print( ('[space]', c_here) )
                 
                 self.consume_char()
+            
+            elif c_here == '#':
+                comment = self.consume_comment()
+                tokens.append(TKN_COMMENT(data=comment))
 
             else:
                 print( ('[unknown]', c_here) )
