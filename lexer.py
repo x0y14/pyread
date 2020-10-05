@@ -1,6 +1,6 @@
 from modules.string_converter import StringConverter
 import re
-
+from pyread_token import *
 
 class Lexer:
     def __init__(self, inp):
@@ -124,63 +124,86 @@ class Lexer:
                     break# "" end
             else:
                 text += c
+            
+        # print(f'text: {text}')
         return text
 
     
     def lex(self):
         in_text = False
-        in_func_param = False
-        in_func_param_tag = ''
+        # in_func_param = False
+        # in_func_param_tag = ''
+        tokens = []
 
         # variable_func_identfy = True
 
         while self.is_eof() == False:
             c_here = self.get_char()
+            # print(c_here)
 
             if re.match(r'[a-zA-Z_]', c_here):
                 if not in_text:
                     block = self.consume_while_variable_func_name()
-                    print( (f'{in_func_param_tag}symble', block) )
-                    if self.can_move_next():
-                        self.consume_char()
+                    # print( (f'{in_func_param_tag}symble', block) )
+                    tokens.append(TKN_IDENTIFIER(data=block))# token
+                    # if self.can_move_next():
+                        # self.consume_char()
 
                 else:
-                    print('= TEXT =')
+                    print('= TEXT =')# ?
                     if self.can_move_next():
                         self.consume_char()
             
             elif re.match(r'[0-9.]', c_here):
                 block = self.consume_while_number()
-                n = StringConverter(block).convert()
-                print( (f'{in_func_param_tag}number', n) )
+                data, is_float = StringConverter(block).convert()
+                # print( (f'{in_func_param_tag}number', n) )
+                if is_float:
+                    tokens.append(TKN_FLOAT(data=data))
+                else:
+                    tokens.append(TKN_INT(data=data))
+
                 if self.can_move_next():
                     self.consume_char()
 
             elif c_here in ['"', "'"]:
                 # get text
                 text = self.consume_while_text()
-                print( ( 'data', text ) )
+                # print( ( 'data', text ) )
+                tokens.append(TKN_STRING(data=text))
 
-            elif c_here in '(){},:;':
-                print( (f'{in_func_param_tag}operation', c_here) )
+            elif c_here in '(){},:;+-=[]':
+                # print( (f'operations', c_here) )
                 if c_here == '(':
-                    in_func_param = True
-                    in_func_param_tag = '[PARAM] '
+                    # in_func_param = True
+                    # in_func_param_tag = '[PARAM] '
                     # if self.can_move_next():
+                    tokens.append(TKN_PARENTHESES_OPEN())
 
                 elif c_here == ')':
-                    in_func_param = False
-                    in_func_param_tag = ''
+                    # in_func_param = False
+                    # in_func_param_tag = ''
+                    tokens.append(TKN_PARENTHESES_CLOSE())
                     # if self.can_move_next():
+                
+                elif c_here == '=':
+                    tokens.append(TKN_EQUAL())
+                
+                elif c_here == ',':
+                    tokens.append(TKN_COMMA())
             
                 self.consume_char()
 
             elif re.match(r'\s', c_here):
                 if c_here == '\n':
-                    print( ('new_line', '\n') )
+                    # print( ('new_line', '\n') )
+                    tokens.append(TKN_SPACE_NEWLINE())
                 elif c_here == ' ':
-                    print( ('white_space', ' ') )
-                
+                    # print( ('white_space', ' ') )
+                    tokens.append(TKN_SPACE_WHITE())
+                elif c_here == '\t':
+                    tokens.append(TKN_SPACE_TAB())
+
                 else:
                     print( ('space', c_here) )
                 
@@ -190,9 +213,12 @@ class Lexer:
                 print( ('unknown', c_here) )
                 if self.can_move_next():
                     self.consume_char()
+        
+        return tokens
 
 
 
 if __name__ == '__main__':
     lx = Lexer("name = 'john'\nprint('hello', name)")
-    lx.lex()
+    tks = lx.lex()
+    print(tks)
