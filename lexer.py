@@ -304,9 +304,11 @@ class Lexer:
                     tokens.append(TKN_COMMA())
                 elif c_here == '.':
                     tokens.append(TKN_PERIOD())
+                elif c_here == '&':
+                    tokens.append(TKN_AND_MARK())
                 
                 else:
-                    print( (f'[op]', c_here) )
+                    tokens.append(TKN_UNKNOWN(data=c_here))
             
                 self.consume_char()
 
@@ -314,12 +316,12 @@ class Lexer:
             elif re.match(r'\s', c_here):
                 if c_here == '\n':
                     # print( ('new_line', '\n') )
-                    tokens.append(TKN_SPACE_NEWLINE())
+                    tokens.append(TKN_NEWLINE())
                 elif c_here == ' ':
                     # print( ('white_space', ' ') )
-                    tokens.append(TKN_SPACE_WHITE())
+                    tokens.append(TKN_WHITE_SPACE())
                 elif c_here == '\t':
-                    tokens.append(TKN_SPACE_TAB())
+                    tokens.append(TKN_TAB())
 
                 else:
                     print( ('[space]', c_here) )
@@ -331,7 +333,8 @@ class Lexer:
                 tokens.append(TKN_COMMENT(data=comment))
 
             else:
-                print( ('[unknown]', c_here) )
+                # print( ('[unknown]', c_here) )
+                tokens.append(TKN_UNKNOWN(data=c_here))
                 if self.can_move_next():
                     self.consume_char()
         

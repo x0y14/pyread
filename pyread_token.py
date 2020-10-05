@@ -76,17 +76,17 @@ class TKN_EQUAL:
 class TKN_GREATER:
     data = '>'
 
-@dataclasses.dataclass(frozen=True)
-class TKN_EQUAL_TO_GREATER:
-    data = '>='
+# @dataclasses.dataclass(frozen=True)
+# class TKN_EQUAL_TO_GREATER:
+#     data = '>='
 
 @dataclasses.dataclass(frozen=True)
 class TKN_LESSER:
     data = '<'
 
-@dataclasses.dataclass(frozen=True)
-class TKN_EQUAL_TO_LESSER:
-    data = '<='
+# @dataclasses.dataclass(frozen=True)
+# class TKN_EQUAL_TO_LESSER:
+#     data = '<='
 
 @dataclasses.dataclass(frozen=True)
 class TKN_PARENTHESES_OPEN:
@@ -130,26 +130,26 @@ class TKN_PERIOD:
 
 # space
 @dataclasses.dataclass(frozen=True)
-class TKN_SPACE_WHITE:
+class TKN_WHITE_SPACE:
     data = ' '
 
 @dataclasses.dataclass(frozen=True)
-class TKN_SPACE_TAB:
+class TKN_TAB:
     data = '\t'
 
 @dataclasses.dataclass(frozen=True)
-class TKN_SPACE_NEWLINE:
+class TKN_NEWLINE:
     data = '\n'
 
 
 # quotation
-@dataclasses.dataclass(frozen=True)
-class TKN_QUOTATION_SINGLE:
-    data = "'"
+# @dataclasses.dataclass(frozen=True)
+# class TKN_QUOTATION_SINGLE:
+#     data = "'"
 
-@dataclasses.dataclass(frozen=True)
-class TKN_QUOTATION_DOUBLE:
-    data = '"'
+# @dataclasses.dataclass(frozen=True)
+# class TKN_QUOTATION_DOUBLE:
+#     data = '"'
 
 # python予約語
 @dataclasses.dataclass(frozen=True)
