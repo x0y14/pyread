@@ -95,9 +95,9 @@ class StringConverter:
 			i *= -1
 		
 		if self.is_float == False:
-			return int(i)
+			return int(i), False
 		else:
-			return i
+			return i, True
 
 
 # st = StringConverter(
