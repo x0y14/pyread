@@ -17,9 +17,9 @@ class Lexer:
         # len()だとそのままの文字数を返してくるので、1ずれてしまうので。
         # print(f'[is_eof] MAX: {len(self.input)}, NOW: {self.pos+1}')
         q = self.pos >= len(self.input)
-        if q:
+        # if q:
             # print(f'= End Of File =')
-            pass
+        #     pass
 
         return q
     
@@ -162,30 +162,86 @@ class Lexer:
 
 
     def lex(self):
-        in_text = False
-        # in_func_param = False
-        # in_func_param_tag = ''
         tokens = []
-
-        # variable_func_identfy = True
 
         while self.is_eof() == False:
             c_here = self.get_char()
             # print(c_here)
-
+            
             if re.match(r'[a-zA-Z_]', c_here):
-                if not in_text:
-                    block = self.consume_while_variable_func_name()
-                    # print( (f'{in_func_param_tag}symble', block) )
-                    tokens.append(TKN_IDENTIFIER(data=block))# token
-                    # if self.can_move_next():
-                        # self.consume_char()
-
+                block = self.consume_while_variable_func_name()
+                if block == "False":
+                    tokens.append(PYK_FALSE())
+                elif block == "None":
+                    tokens.append(PYK_NONE())
+                elif block == "True":
+                    tokens.append(PYK_TRUE())
+                elif block == "and":
+                    tokens.append(PYK_AND())
+                elif block == "as":
+                    tokens.append(PYK_AS())
+                elif block == "assert":
+                    tokens.append(PYK_ASSERT())
+                elif block == "async":
+                    tokens.append(PYK_ASYNC())
+                elif block == "await":
+                    tokens.append(PYK_AWAIT())
+                elif block == "break":
+                    tokens.append(PYK_BREAK())
+                elif block == "class":
+                    tokens.append(PYK_CLASS())
+                elif block == "continue":
+                    tokens.append(PYK_CONTINUE())
+                elif block == "def":
+                    tokens.append(PYK_DEF())
+                elif block == "del":
+                    tokens.append(PYK_DEL())
+                elif block == "elif":
+                    tokens.append(PYK_ELIF())
+                elif block == "else":
+                    tokens.append(PYK_ELSE())
+                elif block == "except":
+                    tokens.append(PYK_EXCEPT())
+                elif block == "finally":
+                    tokens.append(PYK_FINALLY())
+                elif block == "for":
+                    tokens.append(PYK_FOR())
+                elif block == "from":
+                    tokens.append(PYK_FROM())
+                elif block == "global":
+                    tokens.append(PYK_GLOBAL())
+                elif block == "if":
+                    tokens.append(PYK_IF())
+                elif block == "import":
+                    tokens.append(PYK_IMPORT())
+                elif block == "in":
+                    tokens.append(PYK_IN())
+                elif block == "is":
+                    tokens.append(PYK_IS())
+                elif block == "lambda":
+                    tokens.append(PYK_LAMBDA())
+                elif block == "nonlocal":
+                    tokens.append(PYK_NONLOCAL())
+                elif block == "not":
+                    tokens.append(PYK_NOT())
+                elif block == "or":
+                    tokens.append(PYK_OR())
+                elif block == "pass":
+                    tokens.append(PYK_PASS())
+                elif block == "raise":
+                    tokens.append(PYK_RAISE())
+                elif block == "return":
+                    tokens.append(PYK_RETURN())
+                elif block == "try":
+                    tokens.append(PYK_TRY())
+                elif block == "while":
+                    tokens.append(PYK_WHILE())
+                elif block == "with":
+                    tokens.append(PYK_WITH())
+                elif block == "yield":
+                    tokens.append(PYK_YIELD())
                 else:
-                    raise SyntaxError('?')
-                    # print('= TEXT =')# ?
-                    # if self.can_move_next():
-                    #     self.consume_char()
+                    tokens.append(TKN_IDENTIFIER(data=block))# token
             
             elif re.match(r'[0-9.]', c_here):
                 block = self.consume_number()
@@ -196,49 +252,65 @@ class Lexer:
                 else:
                     tokens.append(TKN_INT(data=data))
 
-                # if self.can_move_next():
-                #     self.consume_char()
-
+            # quotation
             elif c_here in ['"', "'"]:
                 # get text
                 text = self.consume_text()
-                # print( ( 'data', text ) )
                 tokens.append(TKN_STRING(data=text))
 
-            elif c_here in '(){},:;+-=[]':
-                # print( (f'operations', c_here) )
-                if c_here == '(':
+            # op
+            elif c_here in '+-=%/*&$!?@><()[]{}:;,.':
+                if c_here == '+':
+                    tokens.append(TKN_PLUS())
+                elif c_here == '-':
+                    tokens.append(TKN_MINUS())
+                elif c_here == '%':
+                    tokens.append(TKN_PERCENT())
+                elif c_here == '/':
+                    tokens.append(TKN_SLASH())
+                elif c_here == '*':
+                    tokens.append(TKN_ASTERISK())
+                elif c_here == '$':
+                    tokens.append(TKN_DOLLAR_MARK())
+                elif c_here == '!':
+                    tokens.append(TKN_EXCLAMATION_MARK())
+                elif c_here == '?':
+                    tokens.append(TKN_QUESTION_MARK())
+                elif c_here == '@':
+                    tokens.append(TKN_AT_MARK())
+                elif c_here == '=':
+                    tokens.append(TKN_EQUAL())
+                elif c_here == '>':
+                    tokens.append(TKN_GREATER())
+                elif c_here == '<':
+                    tokens.append(TKN_LESSER())
+                elif c_here == '(':
                     tokens.append(TKN_PARENTHESES_OPEN())
                 elif c_here == ')':
                     tokens.append(TKN_PARENTHESES_CLOSE())
-                
                 elif c_here == '[':
                     tokens.append(TKN_SQUARE_BRACKET_OPEN())
                 elif c_here == ']':
                     tokens.append(TKN_SQUARE_BRACKET_CLOSE())
-
                 elif c_here == '{':
                     tokens.append(TKN_CURLY_BRACKET_OPEN())
                 elif c_here == '}':
-                    tokens.append(TKN_CURLY_BRACKET_OPEN())      
-
-                elif c_here == '=':
-                    tokens.append(TKN_EQUAL())
-                
-                elif c_here == ',':
-                    tokens.append(TKN_COMMA())
-                
+                    tokens.append(TKN_CURLY_BRACKET_CLOSE())
                 elif c_here == ':':
                     tokens.append(TKN_COLON())
-
                 elif c_here == ';':
                     tokens.append(TKN_SEMICOLON())
+                elif c_here == ',':
+                    tokens.append(TKN_COMMA())
+                elif c_here == '.':
+                    tokens.append(TKN_PERIOD())
                 
                 else:
                     print( (f'[op]', c_here) )
             
                 self.consume_char()
 
+            # space
             elif re.match(r'\s', c_here):
                 if c_here == '\n':
                     # print( ('new_line', '\n') )

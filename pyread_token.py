@@ -22,15 +22,51 @@ class TKN_IDENTIFIER:
 class TKN_COMMENT:
     data: str
 
+@dataclasses.dataclass
+class TKN_UNKNOWN:
+    data: str
+
 
 # operation
 @dataclasses.dataclass(frozen=True)
-class TKN_ADD:
+class TKN_PLUS:
     data = '+'
 
 @dataclasses.dataclass(frozen=True)
 class TKN_MINUS:
     data = '-'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_PERCENT:
+    data = '%'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_SLASH:
+    data = '/'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_ASTERISK:
+    data = '*'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_AND_MARK:
+    data = '&'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_DOLLAR_MARK:
+    data = '$'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_EXCLAMATION_MARK:
+	data = '!'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_QUESTION_MARK:
+	data = '?'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_AT_MARK:
+	data = '@'
 
 @dataclasses.dataclass(frozen=True)
 class TKN_EQUAL:
