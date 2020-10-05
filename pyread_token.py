@@ -18,6 +18,10 @@ class TKN_FLOAT:
 class TKN_IDENTIFIER:
     data: str
 
+@dataclasses.dataclass
+class TKN_COMMENT:
+    data: str
+
 
 # operation
 @dataclasses.dataclass(frozen=True)
@@ -57,6 +61,22 @@ class TKN_PARENTHESES_CLOSE:
     data = ')'
 
 @dataclasses.dataclass(frozen=True)
+class TKN_SQUARE_BRACKET_OPEN:
+    data = '['
+
+@dataclasses.dataclass(frozen=True)
+class TKN_SQUARE_BRACKET_CLOSE:
+    data = ']'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_CURLY_BRACKET_OPEN:
+    data = '{'
+
+@dataclasses.dataclass(frozen=True)
+class TKN_CURLY_BRACKET_CLOSE:
+    data = '}'
+
+@dataclasses.dataclass(frozen=True)
 class TKN_COLON:
     data = ':'
 
@@ -71,7 +91,6 @@ class TKN_COMMA:
 @dataclasses.dataclass(frozen=True)
 class TKN_PERIOD:
     data = '.'
-
 
 # space
 @dataclasses.dataclass(frozen=True)

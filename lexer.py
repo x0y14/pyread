@@ -18,7 +18,8 @@ class Lexer:
         # print(f'[is_eof] MAX: {len(self.input)}, NOW: {self.pos+1}')
         q = self.pos >= len(self.input)
         if q:
-            print(f'= End Of File =')
+            # print(f'= End Of File =')
+            pass
 
         return q
     
@@ -150,9 +151,10 @@ class Lexer:
                         # self.consume_char()
 
                 else:
-                    print('= TEXT =')# ?
-                    if self.can_move_next():
-                        self.consume_char()
+                    raise SyntaxError('?')
+                    # print('= TEXT =')# ?
+                    # if self.can_move_next():
+                    #     self.consume_char()
             
             elif re.match(r'[0-9.]', c_here):
                 block = self.consume_while_number()
@@ -163,8 +165,8 @@ class Lexer:
                 else:
                     tokens.append(TKN_INT(data=data))
 
-                if self.can_move_next():
-                    self.consume_char()
+                # if self.can_move_next():
+                #     self.consume_char()
 
             elif c_here in ['"', "'"]:
                 # get text
@@ -175,22 +177,34 @@ class Lexer:
             elif c_here in '(){},:;+-=[]':
                 # print( (f'operations', c_here) )
                 if c_here == '(':
-                    # in_func_param = True
-                    # in_func_param_tag = '[PARAM] '
-                    # if self.can_move_next():
                     tokens.append(TKN_PARENTHESES_OPEN())
-
                 elif c_here == ')':
-                    # in_func_param = False
-                    # in_func_param_tag = ''
                     tokens.append(TKN_PARENTHESES_CLOSE())
-                    # if self.can_move_next():
                 
+                elif c_here == '[':
+                    tokens.append(TKN_SQUARE_BRACKET_OPEN())
+                elif c_here == ']':
+                    tokens.append(TKN_SQUARE_BRACKET_CLOSE())
+
+                elif c_here == '{':
+                    tokens.append(TKN_CURLY_BRACKET_OPEN())
+                elif c_here == '}':
+                    tokens.append(TKN_CURLY_BRACKET_OPEN())      
+
                 elif c_here == '=':
                     tokens.append(TKN_EQUAL())
                 
                 elif c_here == ',':
                     tokens.append(TKN_COMMA())
+                
+                elif c_here == ':':
+                    tokens.append(TKN_COLON())
+
+                elif c_here == ';':
+                    tokens.append(TKN_SEMICOLON())
+                
+                else:
+                    print( (f'[op]', c_here) )
             
                 self.consume_char()
 
@@ -205,20 +219,13 @@ class Lexer:
                     tokens.append(TKN_SPACE_TAB())
 
                 else:
-                    print( ('space', c_here) )
+                    print( ('[space]', c_here) )
                 
                 self.consume_char()
 
             else:
-                print( ('unknown', c_here) )
+                print( ('[unknown]', c_here) )
                 if self.can_move_next():
                     self.consume_char()
         
         return tokens
-
-
-
-if __name__ == '__main__':
-    lx = Lexer("name = 'john'\nprint('hello', name)")
-    tks = lx.lex()
-    print(tks)
