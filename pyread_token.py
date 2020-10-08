@@ -142,6 +142,11 @@ class TKN_NEWLINE:
     data = '\n'
 
 
+@dataclasses.dataclass
+class TKN_TRIPLE_QUOTATION_TEXT:
+	data: str
+
+
 # quotation
 # @dataclasses.dataclass(frozen=True)
 # class TKN_QUOTATION_SINGLE:

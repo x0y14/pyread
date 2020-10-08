@@ -158,6 +158,45 @@ class Lexer:
                 return comment
             else:
                 comment += self.consume_char()
+        
+    def is_here_and_next_and_next_quotation(self):
+        # for """ str """
+        return (self.input[self.pos] == self.input[self.pos+1] == self.input[self.pos+2])
+    
+
+    def consume_triple_quotation_text(self):
+        is_single_q = False
+        text = ''
+        assert (self.input[self.pos] == self.input[self.pos+1] == self.input[self.pos+2])
+        if self.input[self.pos] == "'":
+            is_single_q = True
+
+        # triple_q
+        self.consume_char()
+        self.consume_char()
+        self.consume_char()# triple_q
+
+        while self.is_eof() == False:
+            c = self.consume_char()
+            if c == "'":
+                if is_single_q:
+                    self.consume_char()
+                    self.consume_char()
+                    break# ' ' end
+                else:
+                    text += c# ' " ' continue
+            elif c == '"':
+                if is_single_q:
+                    text += c# " ' " continue
+                else:
+                    self.consume_char()
+                    self.consume_char()
+                    break# "" end
+            else:
+                text += c
+        return text
+        
+
 
 
 
@@ -255,8 +294,13 @@ class Lexer:
             # quotation
             elif c_here in ['"', "'"]:
                 # get text
-                text = self.consume_text()
-                tokens.append(TKN_STRING(data=text))
+                if self.is_here_and_next_and_next_quotation():
+                    # print('[ !! found triple quotation !! ]')# コメントなのかテキストなのかの判断をどうするか。まぁパーサーに任せよう。
+                    text = self.consume_triple_quotation_text()
+                    tokens.append(TKN_TRIPLE_QUOTATION_TEXT(data=text))
+                else:
+                    text = self.consume_text()
+                    tokens.append(TKN_STRING(data=text))
 
             # op
             elif c_here in '+-=%/*&$!?@><()[]{}:;,.':

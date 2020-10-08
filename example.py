@@ -5,6 +5,7 @@ def main():
     male = True
     fav = ['soccer', 'video_game']
     # this is comment
+    """ hahahah """
 
 
 if __name__ == '__main__':
