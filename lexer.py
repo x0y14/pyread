@@ -47,6 +47,9 @@ class Lexer:
         # 動かないでその場の文字を返します。
         return self.input[self.pos]
     
+    def get_position(self) -> int:
+        return self.pos
+    
 
     def get_next_char(self) -> str:
         if self.can_move_next():
@@ -68,18 +71,23 @@ class Lexer:
     
 
     def consume_while(self, target='') -> str:
+        p_s = self.get_position()
         # 次の文字が与えられたものと一致している間、consume_char()をし続けます。
         result = ''
         if target == '':
-            return ''
+            p_e = self.get_position()
+            return (result, POSITION_DATA(p_s, p_e))
         while self.is_eof() is False:
             if self.get_char() == target:
                 result += self.consume_char()
                 if self.is_next_char(target) == False:
-                    return result
+                    break
+        p_e = self.get_position()
+        return (result, POSITION_DATA(p_s, p_e))
     
 
     def consume_while_variable_func_name(self):
+        p_s = self.get_position()
         # 関数名や変数などに。
         result = ''
         while self.is_eof() == False:
@@ -87,23 +95,27 @@ class Lexer:
             if re.match(r'[a-zA-Z0-9_]', c):
                 result += self.consume_char()
             else:
-                return result
-        return result
+                break
+        p_e = self.get_position()
+        return (result, POSITION_DATA(p_s, p_e))
     
 
     def consume_number(self):
         # 数字
+        p_s = self.get_position()
         result = ''
         while self.is_eof() == False:
             c = self.get_char()
             if re.match(r'[0-9.]', c):
                 result += self.consume_char()
             else:
-                return result
-        return result
+                break
+        p_e = self.get_position()
+        return (result, POSITION_DATA(p_s, p_e))
     
 
     def consume_text(self):
+        p_s = self.get_position()
         is_single_q = False
         text = ''
         assert (self.get_char() in ["'", '"'])
@@ -115,6 +127,7 @@ class Lexer:
             c = self.consume_char()
             if c == "'":
                 if is_single_q:
+                    p_e = self.get_position()
                     break# ' ' end
                 else:
                     text += c# ' " ' continue
@@ -122,15 +135,17 @@ class Lexer:
                 if is_single_q:
                     text += c# " ' " continue
                 else:
+                    p_e = self.get_position()
                     break# "" end
             else:
                 text += c
             
         # print(f'text: {text}')
-        return text
+        return (text, POSITION_DATA(p_s, p_e))
     
 
     def consume_comment(self):
+        p_s = self.get_position()
         # 全部こんだけ綺麗にかけたらすごいシンプルになるのに。
         # 後で書き直そうかな。
         comment = ''
@@ -155,7 +170,8 @@ class Lexer:
         # こっちにする。
         while self.is_eof() == False:
             if self.get_char() == '\n':
-                return comment
+                p_e = self.get_position()
+                return (comment, POSITION_DATA(p_s, p_e))
             else:
                 comment += self.consume_char()
         
@@ -165,6 +181,7 @@ class Lexer:
     
 
     def consume_triple_quotation_text(self):
+        p_s = self.get_position()
         is_single_q = False
         text = ''
         assert (self.input[self.pos] == self.input[self.pos+1] == self.input[self.pos+2])
@@ -182,6 +199,7 @@ class Lexer:
                 if is_single_q:
                     self.consume_char()
                     self.consume_char()
+                    p_e = self.get_position()
                     break# ' ' end
                 else:
                     text += c# ' " ' continue
@@ -191,10 +209,11 @@ class Lexer:
                 else:
                     self.consume_char()
                     self.consume_char()
+                    p_e = self.get_position()
                     break# "" end
             else:
                 text += c
-        return text
+        return (text, POSITION_DATA(p_s, p_e))
         
 
 
@@ -205,154 +224,155 @@ class Lexer:
 
         while self.is_eof() == False:
             c_here = self.get_char()
+            _pos = self.get_position()
             # print(c_here)
             
             if re.match(r'[a-zA-Z_]', c_here):
-                block = self.consume_while_variable_func_name()
+                block, p = self.consume_while_variable_func_name()
                 if block == "False":
-                    tokens.append(PYK_FALSE())
+                    tokens.append(PYK_FALSE(position=p))
                 elif block == "None":
-                    tokens.append(PYK_NONE())
+                    tokens.append(PYK_NONE(position=p))
                 elif block == "True":
-                    tokens.append(PYK_TRUE())
+                    tokens.append(PYK_TRUE(position=p))
                 elif block == "and":
-                    tokens.append(PYK_AND())
+                    tokens.append(PYK_AND(position=p))
                 elif block == "as":
-                    tokens.append(PYK_AS())
+                    tokens.append(PYK_AS(position=p))
                 elif block == "assert":
-                    tokens.append(PYK_ASSERT())
+                    tokens.append(PYK_ASSERT(position=p))
                 elif block == "async":
-                    tokens.append(PYK_ASYNC())
+                    tokens.append(PYK_ASYNC(position=p))
                 elif block == "await":
-                    tokens.append(PYK_AWAIT())
+                    tokens.append(PYK_AWAIT(position=p))
                 elif block == "break":
-                    tokens.append(PYK_BREAK())
+                    tokens.append(PYK_BREAK(position=p))
                 elif block == "class":
-                    tokens.append(PYK_CLASS())
+                    tokens.append(PYK_CLASS(position=p))
                 elif block == "continue":
-                    tokens.append(PYK_CONTINUE())
+                    tokens.append(PYK_CONTINUE(position=p))
                 elif block == "def":
-                    tokens.append(PYK_DEF())
+                    tokens.append(PYK_DEF(position=p))
                 elif block == "del":
-                    tokens.append(PYK_DEL())
+                    tokens.append(PYK_DEL(position=p))
                 elif block == "elif":
-                    tokens.append(PYK_ELIF())
+                    tokens.append(PYK_ELIF(position=p))
                 elif block == "else":
-                    tokens.append(PYK_ELSE())
+                    tokens.append(PYK_ELSE(position=p))
                 elif block == "except":
-                    tokens.append(PYK_EXCEPT())
+                    tokens.append(PYK_EXCEPT(position=p))
                 elif block == "finally":
-                    tokens.append(PYK_FINALLY())
+                    tokens.append(PYK_FINALLY(position=p))
                 elif block == "for":
-                    tokens.append(PYK_FOR())
+                    tokens.append(PYK_FOR(position=p))
                 elif block == "from":
-                    tokens.append(PYK_FROM())
+                    tokens.append(PYK_FROM(position=p))
                 elif block == "global":
-                    tokens.append(PYK_GLOBAL())
+                    tokens.append(PYK_GLOBAL(position=p))
                 elif block == "if":
-                    tokens.append(PYK_IF())
+                    tokens.append(PYK_IF(position=p))
                 elif block == "import":
-                    tokens.append(PYK_IMPORT())
+                    tokens.append(PYK_IMPORT(position=p))
                 elif block == "in":
-                    tokens.append(PYK_IN())
+                    tokens.append(PYK_IN(position=p))
                 elif block == "is":
-                    tokens.append(PYK_IS())
+                    tokens.append(PYK_IS(position=p))
                 elif block == "lambda":
-                    tokens.append(PYK_LAMBDA())
+                    tokens.append(PYK_LAMBDA(position=p))
                 elif block == "nonlocal":
-                    tokens.append(PYK_NONLOCAL())
+                    tokens.append(PYK_NONLOCAL(position=p))
                 elif block == "not":
-                    tokens.append(PYK_NOT())
+                    tokens.append(PYK_NOT(position=p))
                 elif block == "or":
-                    tokens.append(PYK_OR())
+                    tokens.append(PYK_OR(position=p))
                 elif block == "pass":
-                    tokens.append(PYK_PASS())
+                    tokens.append(PYK_PASS(position=p))
                 elif block == "raise":
-                    tokens.append(PYK_RAISE())
+                    tokens.append(PYK_RAISE(position=p))
                 elif block == "return":
-                    tokens.append(PYK_RETURN())
+                    tokens.append(PYK_RETURN(position=p))
                 elif block == "try":
-                    tokens.append(PYK_TRY())
+                    tokens.append(PYK_TRY(position=p))
                 elif block == "while":
-                    tokens.append(PYK_WHILE())
+                    tokens.append(PYK_WHILE(position=p))
                 elif block == "with":
-                    tokens.append(PYK_WITH())
+                    tokens.append(PYK_WITH(position=p))
                 elif block == "yield":
-                    tokens.append(PYK_YIELD())
+                    tokens.append(PYK_YIELD(position=p))
                 else:
-                    tokens.append(TKN_IDENTIFIER(data=block))# token
+                    tokens.append(TKN_IDENTIFIER(data=block, position=p))# token
             
             elif re.match(r'[0-9.]', c_here):
-                block = self.consume_number()
+                block, p = self.consume_number()
                 data, is_float = StringConverter(block).convert()
                 # print( (f'{in_func_param_tag}number', n) )
                 if is_float:
-                    tokens.append(TKN_FLOAT(data=data))
+                    tokens.append(TKN_FLOAT(data=data, position=p))
                 else:
-                    tokens.append(TKN_INT(data=data))
+                    tokens.append(TKN_INT(data=data, position=p))
 
             # quotation
             elif c_here in ['"', "'"]:
                 # get text
                 if self.is_here_and_next_and_next_quotation():
                     # print('[ !! found triple quotation !! ]')# コメントなのかテキストなのかの判断をどうするか。まぁパーサーに任せよう。
-                    text = self.consume_triple_quotation_text()
-                    tokens.append(TKN_TRIPLE_QUOTATION_TEXT(data=text))
+                    text, p = self.consume_triple_quotation_text()
+                    tokens.append(TKN_TRIPLE_QUOTATION_TEXT(data=text, position=p))
                 else:
-                    text = self.consume_text()
-                    tokens.append(TKN_STRING(data=text))
+                    text, p = self.consume_text()
+                    tokens.append(TKN_STRING(data=text, position=p))
 
             # op
             elif c_here in '+-=%/*&$!?@><()[]{}:;,.':
                 if c_here == '+':
-                    tokens.append(TKN_PLUS())
+                    tokens.append(TKN_PLUS(position=_pos))
                 elif c_here == '-':
-                    tokens.append(TKN_MINUS())
+                    tokens.append(TKN_MINUS(position=_pos))
                 elif c_here == '%':
-                    tokens.append(TKN_PERCENT())
+                    tokens.append(TKN_PERCENT(position=_pos))
                 elif c_here == '/':
-                    tokens.append(TKN_SLASH())
+                    tokens.append(TKN_SLASH(position=_pos))
                 elif c_here == '*':
-                    tokens.append(TKN_ASTERISK())
+                    tokens.append(TKN_ASTERISK(position=_pos))
                 elif c_here == '$':
-                    tokens.append(TKN_DOLLAR_MARK())
+                    tokens.append(TKN_DOLLAR_MARK(position=_pos))
                 elif c_here == '!':
-                    tokens.append(TKN_EXCLAMATION_MARK())
+                    tokens.append(TKN_EXCLAMATION_MARK(position=_pos))
                 elif c_here == '?':
-                    tokens.append(TKN_QUESTION_MARK())
+                    tokens.append(TKN_QUESTION_MARK(position=_pos))
                 elif c_here == '@':
-                    tokens.append(TKN_AT_MARK())
+                    tokens.append(TKN_AT_MARK(position=_pos))
                 elif c_here == '=':
-                    tokens.append(TKN_EQUAL())
+                    tokens.append(TKN_EQUAL(position=_pos))
                 elif c_here == '>':
-                    tokens.append(TKN_GREATER())
+                    tokens.append(TKN_GREATER(position=_pos))
                 elif c_here == '<':
-                    tokens.append(TKN_LESSER())
+                    tokens.append(TKN_LESSER(position=_pos))
                 elif c_here == '(':
-                    tokens.append(TKN_PARENTHESES_OPEN())
+                    tokens.append(TKN_PARENTHESES_OPEN(position=_pos))
                 elif c_here == ')':
-                    tokens.append(TKN_PARENTHESES_CLOSE())
+                    tokens.append(TKN_PARENTHESES_CLOSE(position=_pos))
                 elif c_here == '[':
-                    tokens.append(TKN_SQUARE_BRACKET_OPEN())
+                    tokens.append(TKN_SQUARE_BRACKET_OPEN(position=_pos))
                 elif c_here == ']':
-                    tokens.append(TKN_SQUARE_BRACKET_CLOSE())
+                    tokens.append(TKN_SQUARE_BRACKET_CLOSE(position=_pos))
                 elif c_here == '{':
-                    tokens.append(TKN_CURLY_BRACKET_OPEN())
+                    tokens.append(TKN_CURLY_BRACKET_OPEN(position=_pos))
                 elif c_here == '}':
-                    tokens.append(TKN_CURLY_BRACKET_CLOSE())
+                    tokens.append(TKN_CURLY_BRACKET_CLOSE(position=_pos))
                 elif c_here == ':':
-                    tokens.append(TKN_COLON())
+                    tokens.append(TKN_COLON(position=_pos))
                 elif c_here == ';':
-                    tokens.append(TKN_SEMICOLON())
+                    tokens.append(TKN_SEMICOLON(position=_pos))
                 elif c_here == ',':
-                    tokens.append(TKN_COMMA())
+                    tokens.append(TKN_COMMA(position=_pos))
                 elif c_here == '.':
-                    tokens.append(TKN_PERIOD())
+                    tokens.append(TKN_PERIOD(position=_pos))
                 elif c_here == '&':
-                    tokens.append(TKN_AND_MARK())
+                    tokens.append(TKN_AND_MARK(position=_pos))
                 
                 else:
-                    tokens.append(TKN_UNKNOWN(data=c_here))
+                    tokens.append(TKN_UNKNOWN(data=c_here, position=_pos))
             
                 self.consume_char()
 
@@ -360,12 +380,12 @@ class Lexer:
             elif re.match(r'\s', c_here):
                 if c_here == '\n':
                     # print( ('new_line', '\n') )
-                    tokens.append(TKN_NEWLINE())
+                    tokens.append(TKN_NEWLINE(position=_pos))
                 elif c_here == ' ':
                     # print( ('white_space', ' ') )
-                    tokens.append(TKN_WHITE_SPACE())
+                    tokens.append(TKN_WHITE_SPACE(position=_pos))
                 elif c_here == '\t':
-                    tokens.append(TKN_TAB())
+                    tokens.append(TKN_TAB(position=_pos))
 
                 else:
                     print( ('[space]', c_here) )
@@ -373,8 +393,8 @@ class Lexer:
                 self.consume_char()
             
             elif c_here == '#':
-                comment = self.consume_comment()
-                tokens.append(TKN_COMMENT(data=comment))
+                comment, p = self.consume_comment()
+                tokens.append(TKN_COMMENT(data=comment, position=p))
 
             else:
                 # print( ('[unknown]', c_here) )

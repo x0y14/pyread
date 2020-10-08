@@ -1,298 +1,370 @@
 import dataclasses
 
 # literal
+
+@dataclasses.dataclass
+class POSITION_DATA:
+    s: int
+    e: int
+
 @dataclasses.dataclass
 class TKN_STRING:
     data: str
+    position: POSITION_DATA
 
 @dataclasses.dataclass
 class TKN_INT:
     data: int
+    position: POSITION_DATA
 
 @dataclasses.dataclass
 class TKN_FLOAT:
     data: float
-
+    position: POSITION_DATA
 
 @dataclasses.dataclass
 class TKN_IDENTIFIER:
     data: str
+    position: POSITION_DATA
 
 @dataclasses.dataclass
 class TKN_COMMENT:
     data: str
+    position: POSITION_DATA
 
 @dataclasses.dataclass
 class TKN_UNKNOWN:
     data: str
+    position: POSITION_DATA
 
 
 # operation
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_PLUS:
     data = '+'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_MINUS:
     data = '-'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_PERCENT:
     data = '%'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_SLASH:
     data = '/'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_ASTERISK:
     data = '*'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_AND_MARK:
     data = '&'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_DOLLAR_MARK:
     data = '$'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_EXCLAMATION_MARK:
-	data = '!'
+    data = '!'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_QUESTION_MARK:
-	data = '?'
+    data = '?'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_AT_MARK:
-	data = '@'
+    data = '@'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_EQUAL:
     data = '='
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_GREATER:
     data = '>'
+    position: POSITION_DATA
 
-# @dataclasses.dataclass(frozen=True)
+# @dataclasses.dataclass
 # class TKN_EQUAL_TO_GREATER:
 #     data = '>='
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_LESSER:
     data = '<'
+    position: POSITION_DATA
 
-# @dataclasses.dataclass(frozen=True)
+# @dataclasses.dataclass
 # class TKN_EQUAL_TO_LESSER:
 #     data = '<='
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_PARENTHESES_OPEN:
     data = '('
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_PARENTHESES_CLOSE:
     data = ')'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_SQUARE_BRACKET_OPEN:
     data = '['
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_SQUARE_BRACKET_CLOSE:
     data = ']'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_CURLY_BRACKET_OPEN:
     data = '{'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_CURLY_BRACKET_CLOSE:
     data = '}'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_COLON:
     data = ':'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_SEMICOLON:
     data = ';'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_COMMA:
     data = ','
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_PERIOD:
     data = '.'
+    position: POSITION_DATA
 
 # space
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_WHITE_SPACE:
     data = ' '
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_TAB:
     data = '\t'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TKN_NEWLINE:
     data = '\n'
+    position: POSITION_DATA
 
 
 @dataclasses.dataclass
 class TKN_TRIPLE_QUOTATION_TEXT:
-	data: str
-
+    data: str
+    position: POSITION_DATA
 
 # quotation
-# @dataclasses.dataclass(frozen=True)
+# @dataclasses.dataclass
 # class TKN_QUOTATION_SINGLE:
 #     data = "'"
 
-# @dataclasses.dataclass(frozen=True)
+# @dataclasses.dataclass
 # class TKN_QUOTATION_DOUBLE:
 #     data = '"'
 
 # python予約語
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_FALSE:
-	data = 'False'
+    data = 'False'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_NONE:
-	data = 'None'
+    data = 'None'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_TRUE:
-	data = 'True'
+    data = 'True'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_AND:
-	data = 'and'
+    data = 'and'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_AS:
-	data = 'as'
+    data = 'as'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_ASSERT:
-	data = 'assert'
+    data = 'assert'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_ASYNC:
-	data = 'async'
+    data = 'async'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_AWAIT:
-	data = 'await'
+    data = 'await'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_BREAK:
-	data = 'break'
+    data = 'break'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_CLASS:
-	data = 'class'
+    data = 'class'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_CONTINUE:
-	data = 'continue'
+    data = 'continue'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_DEF:
-	data = 'def'
+    data = 'def'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_DEL:
-	data = 'del'
+    data = 'del'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_ELIF:
-	data = 'elif'
+    data = 'elif'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_ELSE:
-	data = 'else'
+    data = 'else'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_EXCEPT:
-	data = 'except'
+    data = 'except'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_FINALLY:
-	data = 'finally'
+    data = 'finally'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_FOR:
-	data = 'for'
+    data = 'for'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_FROM:
-	data = 'from'
+    data = 'from'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_GLOBAL:
-	data = 'global'
+    data = 'global'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_IF:
-	data = 'if'
+    data = 'if'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_IMPORT:
-	data = 'import'
+    data = 'import'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_IN:
-	data = 'in'
+    data = 'in'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_IS:
-	data = 'is'
+    data = 'is'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_LAMBDA:
-	data = 'lambda'
+    data = 'lambda'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_NONLOCAL:
-	data = 'nonlocal'
+    data = 'nonlocal'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_NOT:
-	data = 'not'
+    data = 'not'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_OR:
-	data = 'or'
-
-@dataclasses.dataclass(frozen=True)
+    data = 'or'
+    position: POSITION_DATA
+    
+@dataclasses.dataclass
 class PYK_PASS:
-	data = 'pass'
+    data = 'pass'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_RAISE:
-	data = 'raise'
+    data = 'raise'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_RETURN:
-	data = 'return'
+    data = 'return'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_TRY:
-	data = 'try'
+    data = 'try'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_WHILE:
-	data = 'while'
+    data = 'while'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_WITH:
-	data = 'with'
+    data = 'with'
+    position: POSITION_DATA
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class PYK_YIELD:
-	data = 'yield'
+    data = 'yield'
+    position: POSITION_DATA
