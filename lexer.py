@@ -352,8 +352,9 @@ class Lexer:
                 else:
                     tokens.append(TKN_IDENTIFIER(data=block, position=p))# token
             
-            elif re.match(r'[0-9.]', c_here):
+            elif re.match(r'[0-9]', c_here):
                 block, p = self.consume_number()
+                # print(self.get_ln_number())
                 data, is_float = StringConverter(block).convert()
                 # print( (f'{in_func_param_tag}number', n) )
                 if is_float:
@@ -417,7 +418,7 @@ class Lexer:
                 elif c_here == ',':
                     tokens.append(TKN_COMMA(position=_pos))
                 elif c_here == '.':
-                    tokens.append(TKN_PERIOD(position=_pos))
+                    tokens.append(TKN_DOT(position=_pos))
                 elif c_here == '&':
                     tokens.append(TKN_AND_MARK(position=_pos))
                 

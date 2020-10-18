@@ -10,5 +10,5 @@ if __name__ == '__main__':
     
     psr = Parser(tkn=tkn)
     r = psr.gen_line()
-    # pprint(r)
+    pprint(r)
     psr.gen_nest_data()# AST用に関数の深さみたいなのを表示できるように

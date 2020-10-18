@@ -4,6 +4,7 @@ def main():
     locate = 0.167676
     male = True
     fav = ['soccer', 'video_game']
+    fav.append('baseball')
     # this is comment
     """ hahahah """
 

@@ -31,10 +31,10 @@ class Parser:
                     n += 1
                 else:
                     if n == 0:
-                        print(f'親({ln[0].position.ln}), 深さ = {n}')
+                        print(f'親({ln[0].position.ln}行目), 深さ = {n}')
                         parent = ln[0].position.ln
                     else:
                         # print(ln[0].position.ln, n)
-                        print(f'|-- 子供({ln[0].position.ln}), 深さ = {n}')
+                        print(f'|-- 子供({ln[0].position.ln}行目), 深さ = {n}')
                     n = 0
                     break

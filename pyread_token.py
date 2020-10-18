@@ -164,7 +164,7 @@ class TKN_COMMA:
     position: POSITION_DATA
 
 @dataclasses.dataclass
-class TKN_PERIOD:
+class TKN_DOT:
     data = '.'
     position: POSITION_DATA
 
