@@ -1,12 +1,18 @@
 import dataclasses
-
+from typing import Tuple
 # literal
 
 @dataclasses.dataclass
 class POSITION_DATA:
-    s: int
-    e: int
+    file_name: str
+    p: Tuple[int, int]
+    ln: int
+    col: Tuple[int, int]
 
+@dataclasses.dataclass
+class TKN_EOF:
+    position: POSITION_DATA
+    
 @dataclasses.dataclass
 class TKN_STRING:
     data: str

@@ -3,16 +3,21 @@ import re
 from pyread_token import *
 
 class Lexer:
-    def __init__(self, inp):
-        self.input = inp
+    def __init__(self, file_path):
+        with open(file_path) as f:
+            lines = f.read()
+        self.file_path = file_path
+        self.input = lines
         self.pos = 0
         self.in_string = False
         self.first_char_of_line = True
+
+        self.ln = 1
+        self.col = 1
         super().__init__()
     
 
     def is_eof(self) -> bool:
-        # ぴったりですか?
         # self.pos+1なのは数えるのが0,1,2,3,...だからです(多分あってる)
         # len()だとそのままの文字数を返してくるので、1ずれてしまうので。
         # print(f'[is_eof] MAX: {len(self.input)}, NOW: {self.pos+1}')
@@ -67,26 +72,34 @@ class Lexer:
         c = self.input[self.pos]
         # print(f'[consume_char] pos: {self.pos}, c: {c}')
         self.pos += 1
+        self.add_col_number()
         return c
     
 
     def consume_while(self, target='') -> str:
         p_s = self.get_position()
+        col_s = self.get_col_number()
+
         # 次の文字が与えられたものと一致している間、consume_char()をし続けます。
         result = ''
         if target == '':
             p_e = self.get_position()
-            return (result, POSITION_DATA(p_s, p_e))
+            col_e = self.get_col_number()
+
+            return (result, POSITION_DATA(self.file_path, p_s, p_e))
         while self.is_eof() is False:
             if self.get_char() == target:
                 result += self.consume_char()
                 if self.is_next_char(target) == False:
                     break
         p_e = self.get_position()
-        return (result, POSITION_DATA(p_s, p_e))
+        col_e = self.get_col_number()
+
+        return (result, POSITION_DATA(self.file_path, p=(p_s, p_e), ln=self.get_ln_number(), col=(col_s, col_e)))
     
 
     def consume_while_variable_func_name(self):
+        col_s = self.get_col_number()
         p_s = self.get_position()
         # 関数名や変数などに。
         result = ''
@@ -97,12 +110,15 @@ class Lexer:
             else:
                 break
         p_e = self.get_position()
-        return (result, POSITION_DATA(p_s, p_e))
+        col_e = self.get_col_number()
+        return (result, POSITION_DATA(self.file_path, p=(p_s, p_e), ln=self.get_ln_number(), col=(col_s, col_e)))
     
 
     def consume_number(self):
         # 数字
         p_s = self.get_position()
+        col_s = self.get_col_number()
+
         result = ''
         while self.is_eof() == False:
             c = self.get_char()
@@ -111,11 +127,15 @@ class Lexer:
             else:
                 break
         p_e = self.get_position()
-        return (result, POSITION_DATA(p_s, p_e))
+        col_e = self.get_col_number()
+
+        return (result, POSITION_DATA(self.file_path, p=(p_s, p_e), ln=self.get_ln_number(), col=(col_s, col_e)))
     
 
     def consume_text(self):
         p_s = self.get_position()
+        col_s = self.get_col_number()
+
         is_single_q = False
         text = ''
         assert (self.get_char() in ["'", '"'])
@@ -128,6 +148,8 @@ class Lexer:
             if c == "'":
                 if is_single_q:
                     p_e = self.get_position()
+                    col_e = self.get_col_number()
+
                     break# ' ' end
                 else:
                     text += c# ' " ' continue
@@ -136,16 +158,20 @@ class Lexer:
                     text += c# " ' " continue
                 else:
                     p_e = self.get_position()
+                    col_e = self.get_col_number()
+
                     break# "" end
             else:
                 text += c
             
         # print(f'text: {text}')
-        return (text, POSITION_DATA(p_s, p_e))
+        return (text, POSITION_DATA(self.file_path, p=(p_s, p_e), ln=self.get_ln_number(), col=(col_s, col_e)))
     
 
     def consume_comment(self):
         p_s = self.get_position()
+        col_s = self.get_col_number()
+
         # 全部こんだけ綺麗にかけたらすごいシンプルになるのに。
         # 後で書き直そうかな。
         comment = ''
@@ -171,7 +197,9 @@ class Lexer:
         while self.is_eof() == False:
             if self.get_char() == '\n':
                 p_e = self.get_position()
-                return (comment, POSITION_DATA(p_s, p_e))
+                col_e = self.get_col_number()
+
+                return (comment, POSITION_DATA(self.file_path, p=(p_s, p_e), ln=self.get_ln_number(), col=(col_s, col_e)))
             else:
                 comment += self.consume_char()
         
@@ -182,6 +210,8 @@ class Lexer:
 
     def consume_triple_quotation_text(self):
         p_s = self.get_position()
+        col_s = self.get_col_number()
+
         is_single_q = False
         text = ''
         assert (self.input[self.pos] == self.input[self.pos+1] == self.input[self.pos+2])
@@ -200,6 +230,8 @@ class Lexer:
                     self.consume_char()
                     self.consume_char()
                     p_e = self.get_position()
+                    col_e = self.get_col_number()
+
                     break# ' ' end
                 else:
                     text += c# ' " ' continue
@@ -210,13 +242,29 @@ class Lexer:
                     self.consume_char()
                     self.consume_char()
                     p_e = self.get_position()
+                    col_e = self.get_col_number()
+
                     break# "" end
             else:
                 text += c
-        return (text, POSITION_DATA(p_s, p_e))
+        return (text, POSITION_DATA(self.file_path, p=(p_s, p_e), ln=self.get_ln_number(), col=(col_s, col_e)))
         
 
 
+    def add_ln_number(self):
+        self.ln += 1
+    
+    def get_ln_number(self):
+        return self.ln
+    
+    def add_col_number(self):
+        self.col += 1
+    
+    def reset_col_number(self):
+        self.col = 1
+    
+    def get_col_number(self):
+        return self.col
 
 
     def lex(self):
@@ -225,6 +273,8 @@ class Lexer:
         while self.is_eof() == False:
             c_here = self.get_char()
             _pos = self.get_position()
+            col_s = self.get_col_number()
+            _pos = POSITION_DATA(file_name=self.file_path, p=(_pos, _pos), ln=self.get_ln_number(), col=(col_s, col_s))
             # print(c_here)
             
             if re.match(r'[a-zA-Z_]', c_here):
@@ -325,7 +375,7 @@ class Lexer:
             # op
             elif c_here in '+-=%/*&$!?@><()[]{}:;,.':
                 if c_here == '+':
-                    tokens.append(TKN_PLUS(position=_pos))
+                    tokens.append(TKN_PLUS(position=_pos,))
                 elif c_here == '-':
                     tokens.append(TKN_MINUS(position=_pos))
                 elif c_here == '%':
@@ -380,6 +430,9 @@ class Lexer:
             elif re.match(r'\s', c_here):
                 if c_here == '\n':
                     # print( ('new_line', '\n') )
+                    self.add_ln_number()
+                    self.reset_col_number()
+                    # _pos = POSITION_DATA(file_name=self.file_path, s=_pos, e=_pos, ln=self.get_ln_number(), col=(col_s, col_e))
                     tokens.append(TKN_NEWLINE(position=_pos))
                 elif c_here == ' ':
                     # print( ('white_space', ' ') )
@@ -402,4 +455,7 @@ class Lexer:
                 if self.can_move_next():
                     self.consume_char()
         
+
+        eof_p = POSITION_DATA(file_name=self.file_path, p=(self.get_position(), self.get_position()), ln=self.get_ln_number(), col=(self.get_col_number(), self.get_col_number()))
+        tokens.append(TKN_EOF(position=eof_p))
         return tokens
