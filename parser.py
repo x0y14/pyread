@@ -24,17 +24,29 @@ class Parser:
     
     def gen_nest_data(self):
         n = 0
-        parent = 0
+        block_parent = 0
+        size = 4
+
+        # code_block_nest = 0
+        parents = []
+        nests = []
+
         for ln in self.lined:
             for item in ln:
                 if type(item) == TKN_WHITE_SPACE:
                     n += 1
                 else:
+                    if nests != []:
+                        if nests[-1][1] < n:
+                            # print(nests[-1], n)
+                            # print('a')
+                            print(f'{ "  "*int((int(n) / int(size))) } ({nests[-1][0]}) <- {ln[0].position.ln}は{nests[-1][0]}の子供')
+                    nests.append((ln[0].position.ln, n))
                     if n == 0:
-                        print(f'親({ln[0].position.ln}行目), 深さ = {n}')
-                        parent = ln[0].position.ln
+                        print(f'({ln[0].position.ln}行目) 深さ = {n}')
+                        block_parent = ln[0].position.ln
+                        parents.append(ln[0].position.ln)
                     else:
-                        # print(ln[0].position.ln, n)
-                        print(f'|-- 子供({ln[0].position.ln}行目), 深さ = {n}')
+                        print(f'{ "  "*int((int(n) / int(size))) }|-- ({ln[0].position.ln}行目) 深さ = {n} 親ブロック: {block_parent}')
                     n = 0
                     break

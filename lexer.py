@@ -25,7 +25,6 @@ class Lexer:
         # if q:
             # print(f'= End Of File =')
         #     pass
-
         return q
     
 

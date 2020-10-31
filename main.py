@@ -5,7 +5,8 @@ from pprint import pprint
 
 
 if __name__ == '__main__':
-    lxr = Lexer(file_path='./example.py')
+    # lxr = Lexer(file_path='./example.py')
+    lxr = Lexer(file_path='/Users/x0y14/dev/python/pyread/modules/string_converter.py')
     tkn = lxr.lex()
     
     psr = Parser(tkn=tkn)
