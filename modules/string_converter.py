@@ -18,7 +18,7 @@ class StringConverter:
         
         # reset position
         self.pos = 0
-
+        
         super().__init__()
 
     # 飛び出てませんか？
